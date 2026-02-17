@@ -1,36 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Student Performance Risk Analyzer 🎓
 
-## Getting Started
+A Machine Learning-based system designed to predict whether a student is at **Low**, **Medium**, or **High Risk** of poor academic performance based on their continuous assessment marks.
 
-First, run the development server:
+![Project Status](https://img.shields.io/badge/Status-Active-brightgreen)
+![Tech Stack](https://img.shields.io/badge/Stack-Next.js%20%7C%20Python%20%7C%20Flask-blue)
+
+## 📌 Features
+
+- **Predictive Analysis**: Uses a trained **Random Forest Classifier** to evaluate student risk levels.
+- **Data Collection**: Gathers comprehensive academic data including:
+  - 5 Assignment Marks
+  - 3 Cycle Test Marks
+  - 3 CAT (Continuous Assessment Test) Marks
+  - Attendance Percentage
+  - Lab Marks
+- **Visual Insights**: Generates a performance bar graph for each student prediction.
+- **Data Logging**: Automatically appends student details and prediction results to a CSV file (`backend/students.csv`) for future reference.
+- **Interactive UI**: Clean, multi-step form interface built with Next.js and Tailwind CSS.
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Framework**: [Next.js](https://nextjs.org/) (React)
+- **Styling**: Tailwind CSS
+- **Language**: TypeScript
+
+### Backend
+- **Server**: Flask (Python)
+- **Machine Learning**: Scikit-Learn (Random Forest)
+- **Data Processing**: Pandas, NumPy
+- **Visualization**: Matplotlib
+
+## 🚀 Installation & Setup
+
+Follow these steps to run the application locally.
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [Python](https://www.python.org/) (v3.8 or higher)
+
+---
+
+### 1. Backend Setup (Flask API)
+
+Navigate to the `backend` folder, set up a virtual environment, and install dependencies.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Go to backend directory
+cd backend
+
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+# source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Initialize the Model:**
+Before running the server, generate the dummy dataset and train the model.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+python generate_model.py
+```
+*This will create `student_risk_model.pkl` and `scaler.pkl`.*
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Start the Server:**
+```bash
+python app.py
+```
+The backend API will now be running at `http://127.0.0.1:5000`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Frontend Setup (Next.js)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open a **new terminal** in the project root directory.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Install dependencies
+npm install
 
-## Deploy on Vercel
+# Run the development server
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📊 Project Structure
+
+```
+gradesense/
+├── app/                  # Next.js Frontend Pages & Components
+│   ├── page.tsx          # Main dashboard & form logic
+│   ├── layout.tsx        # App layout structure
+│   └── globals.css       # Global styles (Tailwind)
+├── backend/              # Python Backend
+│   ├── app.py            # Flask API Server
+│   ├── generate_model.py # ML Model training script
+│   ├── requirements.txt  # Python dependencies
+│   ├── students.csv      # Generated file for student data
+│   └── venv/             # Python Virtual Environment
+├── public/               # Static assets
+└── package.json          # Node.js dependencies
+```
+
+## 📝 Usage Guide
+
+1.  **Launch the App**: Click **+ New Student Analysis** on the home screen.
+2.  **Enter Details**: Fill in the student's Name, Roll Number, Department, and Section.
+3.  **Input Marks**: Enter marks for all Assignments (1-5), Cycle Tests (1-3), CATs (1-3), Attendance, and Lab.
+4.  **Analyze**: Click **Analyze Risk**.
+5.  **View Results**: The system will display the predicted Risk Level (Low Risk, Medium Risk, or High Risk) along with a generated performance graph.
+
+## 🤖 Future Improvements
+- [ ] Implement authentication for faculty members.
+- [ ] Connect to a real database (PostgreSQL/MongoDB) instead of CSV.
+- [ ] Add bulk upload feature for analyzing multiple students via Excel.
+- [ ] Improve model accuracy with real-world institutional data.
+
+## 📄 License
+This project is for educational purposes.
