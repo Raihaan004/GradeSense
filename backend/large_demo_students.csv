@@ -1,0 +1,51 @@
+Name,RollNo,Department,Section,assignment_1,assignment_2,assignment_3,assignment_4,assignment_5,cycle_test_1,cycle_test_2,cycle_test_3,cat_1,cat_2,cat_3,attendance,lab_marks,Risk_Level
+Student_0,211723002200,Mechanical Engineering,C,74,61,71,73,65,67,66,66,68,78,80,68,80,Medium Risk
+Student_1,211723002201,Mechanical Engineering,A,80,66,62,78,73,68,68,65,69,65,75,78,67,Medium Risk
+Student_2,211723002202,Computer Science and Engineering,B,55,22,11,16,43,20,12,22,39,22,24,2,10,High Risk
+Student_3,211723002203,Mechanical Engineering,B,78,71,65,69,67,68,80,66,74,73,72,70,66,Medium Risk
+Student_4,211723002204,Electronics and Communication,C,19,33,43,47,17,18,31,54,12,35,39,20,36,High Risk
+Student_5,211723002205,Computer Science and Engineering,C,80,80,85,80,99,82,99,100,95,99,90,94,88,Low Risk
+Student_6,211723002206,Computer Science and Engineering,B,49,53,47,26,55,28,55,8,39,3,35,35,1,High Risk
+Student_7,211723002207,Mechanical Engineering,A,21,12,29,46,25,0,45,38,24,53,2,19,26,High Risk
+Student_8,211723002208,Computer Science and Engineering,C,72,79,80,74,76,78,80,68,69,69,74,77,66,Medium Risk
+Student_9,211723002209,Information Technology,C,82,82,90,96,95,85,94,100,99,100,87,93,83,Low Risk
+Student_10,211723002210,Information Technology,A,89,87,95,100,89,97,87,84,94,84,87,89,91,Low Risk
+Student_11,211723002211,Information Technology,A,88,88,82,86,91,95,80,85,95,82,87,84,93,Low Risk
+Student_12,211723002212,Information Technology,A,64,80,69,74,73,74,64,73,78,74,72,61,65,Medium Risk
+Student_13,211723002213,Computer Science and Engineering,B,22,36,41,16,37,47,52,44,0,46,4,52,19,High Risk
+Student_14,211723002214,Information Technology,B,15,21,26,21,29,25,39,5,5,15,10,46,52,High Risk
+Student_15,211723002215,Electronics and Communication,C,95,83,83,93,88,90,85,87,87,81,90,87,95,Low Risk
+Student_16,211723002216,Mechanical Engineering,C,24,33,45,1,6,21,15,53,12,34,56,43,24,High Risk
+Student_17,211723002217,Information Technology,B,71,67,68,68,71,62,74,66,79,69,69,78,79,Medium Risk
+Student_18,211723002218,Mechanical Engineering,C,74,62,74,74,68,60,80,65,72,77,75,65,70,Medium Risk
+Student_19,211723002219,Computer Science and Engineering,C,31,15,54,10,12,14,34,47,56,43,25,14,15,High Risk
+Student_20,211723002220,Mechanical Engineering,A,50,8,23,0,30,56,17,53,44,35,41,4,34,High Risk
+Student_21,211723002221,Mechanical Engineering,B,80,99,82,92,99,94,81,90,80,99,96,95,94,Low Risk
+Student_22,211723002222,Electronics and Communication,A,100,92,81,95,80,87,90,88,80,92,95,84,88,Low Risk
+Student_23,211723002223,Information Technology,B,67,72,67,80,78,76,72,76,69,71,61,62,61,Medium Risk
+Student_24,211723002224,Mechanical Engineering,A,80,63,79,78,74,80,76,66,76,65,67,77,68,Medium Risk
+Student_25,211723002225,Electronics and Communication,B,72,67,78,75,76,65,69,76,61,70,74,62,76,Medium Risk
+Student_26,211723002226,Electronics and Communication,A,84,89,94,88,89,94,84,81,84,93,98,82,95,Low Risk
+Student_27,211723002227,Electronics and Communication,B,69,73,74,65,73,67,69,70,67,76,77,72,75,Medium Risk
+Student_28,211723002228,Mechanical Engineering,A,52,37,57,0,45,53,36,0,3,41,5,4,1,High Risk
+Student_29,211723002229,Information Technology,B,80,73,71,66,75,64,76,64,78,77,69,72,78,Medium Risk
+Student_30,211723002230,Mechanical Engineering,C,80,97,96,83,87,80,86,99,100,90,99,95,94,Low Risk
+Student_31,211723002231,Electronics and Communication,C,72,69,79,61,61,77,69,74,71,71,66,69,70,Medium Risk
+Student_32,211723002232,Electronics and Communication,A,77,65,70,62,68,72,77,60,66,61,76,67,68,Medium Risk
+Student_33,211723002233,Computer Science and Engineering,A,66,74,60,64,60,60,73,73,75,67,68,61,72,Medium Risk
+Student_34,211723002234,Electronics and Communication,B,97,86,93,94,85,92,95,90,87,90,99,83,83,Low Risk
+Student_35,211723002235,Information Technology,B,91,96,100,82,80,99,92,93,94,98,87,90,95,Low Risk
+Student_36,211723002236,Information Technology,C,94,85,84,100,98,86,83,100,84,86,88,82,83,Low Risk
+Student_37,211723002237,Electronics and Communication,C,86,93,80,98,100,85,83,91,81,90,96,88,94,Low Risk
+Student_38,211723002238,Electronics and Communication,B,98,85,89,99,87,85,95,94,85,99,99,93,97,Low Risk
+Student_39,211723002239,Electronics and Communication,B,92,82,85,95,92,91,87,88,88,93,94,84,96,Low Risk
+Student_40,211723002240,Mechanical Engineering,A,9,2,57,26,40,14,35,27,42,0,3,23,9,High Risk
+Student_41,211723002241,Information Technology,B,30,26,11,59,33,3,49,4,23,57,48,50,43,High Risk
+Student_42,211723002242,Computer Science and Engineering,B,91,97,88,85,96,84,81,97,85,85,94,85,80,Low Risk
+Student_43,211723002243,Computer Science and Engineering,A,73,73,65,77,78,61,78,60,73,69,77,71,79,Medium Risk
+Student_44,211723002244,Computer Science and Engineering,A,77,75,64,75,67,71,70,66,60,74,70,63,76,Medium Risk
+Student_45,211723002245,Information Technology,A,69,69,78,73,79,69,75,64,70,61,80,68,80,Medium Risk
+Student_46,211723002246,Information Technology,A,74,76,62,74,67,75,60,70,62,63,66,79,77,Medium Risk
+Student_47,211723002247,Computer Science and Engineering,A,77,64,76,70,62,71,68,75,75,60,80,71,69,Medium Risk
+Student_48,211723002248,Information Technology,C,94,92,82,99,93,84,90,96,86,86,92,81,87,Low Risk
+Student_49,211723002249,Mechanical Engineering,B,75,73,60,79,75,65,60,71,67,77,71,68,73,Medium Risk
