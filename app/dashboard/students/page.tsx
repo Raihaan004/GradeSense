@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, X, ChevronRight, ChevronLeft, Check, Users, Search, Filter } from "lucide-react";
+import { createStudentAction } from "./actions";
 
 // Types
 type Subject = {
@@ -16,6 +17,7 @@ type Subject = {
 export default function StudentDirectory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [step, setStep] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Form State
   const [basicInfo, setBasicInfo] = useState({ name: "", rollNo: "", department: "", section: "" });
@@ -326,14 +328,21 @@ export default function StudentDirectory() {
                 </button>
               ) : (
                 <button 
-                  onClick={() => {
-                    alert("Student data ready to be sent to database!");
-                    console.log({ basicInfo, subjects });
-                    resetForm();
+                  disabled={isSaving}
+                  onClick={async () => {
+                    setIsSaving(true);
+                    const res = await createStudentAction({ basicInfo, subjects });
+                    setIsSaving(false);
+                    if (res.success) {
+                      alert("Student successfully saved to Neon Database!");
+                      resetForm();
+                    } else {
+                      alert("Error saving data: " + res.error);
+                    }
                   }}
-                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)] flex items-center gap-2"
+                  className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all shadow-[0_0_10px_rgba(16,185,129,0.3)] flex items-center gap-2 disabled:opacity-50"
                 >
-                  <Check className="w-4 h-4" /> Complete & Save
+                  <Check className="w-4 h-4" /> {isSaving ? "Saving..." : "Complete & Save"}
                 </button>
               )}
             </div>
