@@ -1,3 +1,6 @@
 pandas
 scikit-learn
 matplotlib
+fastapi
+uvicorn
+python-dotenv

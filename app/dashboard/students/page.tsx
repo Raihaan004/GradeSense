@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Plus, X, ChevronRight, ChevronLeft, Check, Users, Search, Filter } from "lucide-react";
-import { createStudentAction } from "./actions";
+import { useState, useEffect } from "react";
+import { Plus, X, ChevronRight, ChevronLeft, Check, Users, Search, Filter, AlertTriangle, FileText, Activity } from "lucide-react";
+import { createStudentAction, getStudentsAction, analyzeStudentAction } from "./actions";
 
 // Types
 type Subject = {
@@ -18,6 +18,41 @@ export default function StudentDirectory() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Student List State
+  const [studentList, setStudentList] = useState<any[]>([]);
+  const [isLoadingList, setIsLoadingList] = useState(true);
+  const [selectedStudent, setSelectedStudent] = useState<any | null>(null);
+  
+  // Analysis State
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchStudents = async () => {
+    setIsLoadingList(true);
+    const res = await getStudentsAction();
+    if (res.success) {
+      setStudentList(res.data);
+    }
+    setIsLoadingList(false);
+  };
+
+  useEffect(() => {
+    fetchStudents();
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get("search");
+      if (q) setSearchQuery(q);
+    }
+  }, []);
+
+  const filteredStudents = studentList.filter(s => 
+     s.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+     s.rollNo.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Form State
   const [basicInfo, setBasicInfo] = useState({ name: "", rollNo: "", department: "", section: "" });
@@ -48,6 +83,7 @@ export default function StudentDirectory() {
     setBasicInfo({ name: "", rollNo: "", department: "", section: "" });
     setSubjects([]);
     setIsModalOpen(false);
+    fetchStudents();
   };
 
   return (
@@ -66,22 +102,65 @@ export default function StudentDirectory() {
         </button>
       </div>
 
-      {/* Directory Table / List Placeholder */}
-      <div className="glass-card rounded-2xl border border-slate-800/60 p-1">
-         <div className="p-4 border-b border-slate-800/60 flex justify-between items-center bg-slate-900/40 rounded-t-2xl">
+      {/* Directory Search */}
+      <div className="glass-card rounded-2xl border border-slate-800/60 p-1 mb-6">
+         <div className="p-4 flex justify-between items-center bg-slate-900/40 rounded-xl">
             <div className="relative w-full max-w-md">
               <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-              <input type="text" placeholder="Search directory..." className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Search directory..." 
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-800/50 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-white focus:outline-none focus:border-indigo-500 transition-colors" 
+              />
             </div>
             <button className="p-2 text-slate-400 hover:text-white bg-slate-800/50 rounded-lg border border-slate-700">
               <Filter className="w-5 h-5" />
             </button>
          </div>
-         <div className="p-12 text-center text-slate-500 flex flex-col items-center">
-            <Users className="w-12 h-12 mb-4 text-slate-600" />
-            <p>No students found. Click "Create Student" to add one.</p>
-         </div>
       </div>
+
+      {/* Student List Grid */}
+      {isLoadingList ? (
+        <div className="flex justify-center p-12">
+           <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : filteredStudents.length === 0 ? (
+        <div className="glass-card rounded-2xl border border-slate-800/60 p-12 text-center text-slate-500 flex flex-col items-center">
+            <Users className="w-12 h-12 mb-4 text-slate-600" />
+            <p>No students found matching your search.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredStudents.map(student => (
+            <div key={student.id} onClick={() => setSelectedStudent(student)} className="glass-card p-6 rounded-2xl border border-slate-800/60 hover:border-indigo-500/50 transition-all cursor-pointer group relative overflow-hidden shadow-lg hover:shadow-[0_0_20px_rgba(99,102,241,0.15)]">
+               {student.isAtRisk && (
+                  <div className="absolute top-0 right-0 w-1.5 h-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"></div>
+               )}
+               <div className="flex justify-between items-start mb-3">
+                 <h3 className="text-xl font-bold text-white group-hover:text-indigo-300 transition-colors">{student.name}</h3>
+                 <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 font-bold border border-slate-700">
+                   {student.name.charAt(0)}
+                 </div>
+               </div>
+               <p className="text-slate-400 text-sm mb-4">Roll No: <span className="text-slate-300">{student.rollNo}</span></p>
+               <div className="flex items-center gap-2 mb-5">
+                  <span className="px-3 py-1 bg-indigo-500/10 text-indigo-400 rounded-full text-xs font-medium border border-indigo-500/20">{student.department}</span>
+                  <span className="px-3 py-1 bg-slate-800/80 text-slate-300 rounded-full text-xs font-medium border border-slate-700">Sec {student.section}</span>
+               </div>
+               <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center">
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">ML Risk Score</span>
+                  {student.predictedRiskScore !== null ? (
+                    <span className={`font-bold ${student.isAtRisk ? 'text-rose-400' : 'text-emerald-400'}`}>{student.predictedRiskScore}% Risk</span>
+                  ) : (
+                    <span className="text-slate-500 text-sm">Pending...</span>
+                  )}
+               </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Create Student Modal */}
       {isModalOpen && (
@@ -347,6 +426,114 @@ export default function StudentDirectory() {
               )}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Student Details Modal */}
+      {selectedStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedStudent(null)}></div>
+          <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <div className="flex justify-between items-center p-6 border-b border-slate-800">
+              <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                {selectedStudent.name}
+                {selectedStudent.isAtRisk && <span className="px-3 py-1 bg-rose-500/20 text-rose-400 border border-rose-500/20 rounded-full text-xs font-bold uppercase flex items-center gap-1"><AlertTriangle className="w-3 h-3"/> High Risk</span>}
+              </h2>
+              <button onClick={() => { setSelectedStudent(null); setAnalysisResult(null); }} className="text-slate-400 hover:text-white transition-colors">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1 space-y-8">
+               <div className="grid grid-cols-3 gap-4">
+                 <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Roll Number</p>
+                    <p className="text-white font-medium">{selectedStudent.rollNo}</p>
+                 </div>
+                 <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Department</p>
+                    <p className="text-white font-medium">{selectedStudent.department}</p>
+                 </div>
+                 <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider font-semibold mb-1">Section</p>
+                    <p className="text-white font-medium">{selectedStudent.section}</p>
+                 </div>
+               </div>
+
+               {/* ML Analysis Section */}
+               <div className="p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl">
+                 <div className="flex justify-between items-center mb-4">
+                   <h3 className="text-lg font-bold text-indigo-300 flex items-center gap-2"><Activity className="w-5 h-5"/> ML Risk Analyzer</h3>
+                   {!analysisResult && (
+                     <button 
+                       onClick={async () => {
+                         setIsAnalyzing(true);
+                         const res = await analyzeStudentAction(selectedStudent);
+                         setIsAnalyzing(false);
+                         if (res.success) setAnalysisResult(res.data);
+                       }}
+                       disabled={isAnalyzing}
+                       className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(99,102,241,0.3)] disabled:opacity-50"
+                     >
+                       {isAnalyzing ? "Analyzing..." : "Run Deep Analysis"}
+                     </button>
+                   )}
+                 </div>
+                 
+                 {analysisResult && (
+                   <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+                     <div className="flex items-center gap-4 p-4 bg-slate-900/50 rounded-xl border border-slate-800">
+                       <div className="flex-1">
+                         <p className="text-sm text-slate-400">Predicted Risk</p>
+                         <p className={`text-2xl font-bold ${analysisResult.is_at_risk ? 'text-rose-400' : 'text-emerald-400'}`}>
+                           {analysisResult.risk_probability}%
+                         </p>
+                       </div>
+                       <div className="flex-1">
+                         <p className="text-sm text-slate-400">Recommendation</p>
+                         <p className="text-white font-medium">{analysisResult.is_at_risk ? "Requires immediate intervention." : "Student is performing adequately."}</p>
+                       </div>
+                     </div>
+                     <div className="rounded-xl overflow-hidden border border-slate-700/50 bg-[#0f172a]">
+                       <img src={analysisResult.graph} alt="Risk Factor Graph" className="w-full h-auto object-contain" />
+                     </div>
+                   </div>
+                 )}
+               </div>
+
+               <div>
+                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2"><FileText className="w-5 h-5 text-slate-400"/> Academic Records</h3>
+                 <div className="space-y-4">
+                    {selectedStudent.academicRecords?.map((subj: any, i: number) => (
+                      <div key={i} className="glass-card p-5 rounded-xl border border-slate-700/50">
+                         <h4 className="text-indigo-300 font-medium mb-3">{subj.name} {subj.hasLab ? "(With Lab)" : ""}</h4>
+                         <div className="grid grid-cols-3 gap-6">
+                           <div>
+                             <p className="text-slate-500 text-xs mb-2">Assignments (out of 10)</p>
+                             <div className="flex flex-wrap gap-2">
+                               {subj.assignments?.map((a:any, j:number) => <span key={j} className="w-8 h-8 flex items-center justify-center bg-slate-800 rounded text-slate-300 text-sm border border-slate-700">{a !== "" ? a : "-"}</span>)}
+                             </div>
+                           </div>
+                           <div>
+                             <p className="text-slate-500 text-xs mb-2">CAT Exams (out of 50)</p>
+                             <div className="flex flex-wrap gap-2">
+                               {subj.cats?.map((c:any, j:number) => <span key={j} className="w-9 h-8 flex items-center justify-center bg-slate-800 rounded text-slate-300 text-sm border border-slate-700">{c !== "" ? c : "-"}</span>)}
+                             </div>
+                           </div>
+                           <div>
+                             <p className="text-slate-500 text-xs mb-2">Cycle Tests (out of 100)</p>
+                             <div className="flex flex-wrap gap-2">
+                               {subj.cycleTests?.map((ct:any, j:number) => <span key={j} className="w-10 h-8 flex items-center justify-center bg-slate-800 rounded text-slate-300 text-sm border border-slate-700">{ct !== "" ? ct : "-"}</span>)}
+                             </div>
+                           </div>
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+               </div>
+            </div>
           </div>
         </div>
       )}

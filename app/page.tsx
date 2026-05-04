@@ -4,12 +4,25 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden">
+      {/* Navbar */}
+      <header className="absolute top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 max-w-7xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <BrainCircuit className="w-8 h-8 text-indigo-500" />
+          <span className="text-2xl font-bold text-white tracking-tight">GradeSense</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-medium px-5 py-2.5 transition-colors shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+            Go to Dashboard
+          </Link>
+        </div>
+      </header>
+
       {/* Background Orbs */}
       <div className="absolute top-0 -left-4 w-72 h-72 bg-indigo-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob"></div>
       <div className="absolute top-0 -right-4 w-72 h-72 bg-violet-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000"></div>
       <div className="absolute -bottom-8 left-20 w-72 h-72 bg-fuchsia-500 rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-4000"></div>
 
-      <main className="relative flex flex-col items-center justify-center pt-32 pb-16 px-6 sm:px-12 lg:px-24">
+      <main className="relative flex flex-col items-center justify-center pt-40 pb-16 px-6 sm:px-12 lg:px-24">
         
         {/* Hero Section */}
         <div className="max-w-5xl mx-auto text-center space-y-8 z-10">
