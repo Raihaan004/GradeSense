@@ -1,8 +1,29 @@
 "use server";
 
 import { db } from "@/db";
-import { students, riskProfiles } from "@/db/schema";
+import { students, riskProfiles, subjects as subjectsTable } from "@/db/schema";
 import { revalidatePath } from "next/cache";
+import { eq, desc } from "drizzle-orm";
+
+export async function getSubjectsAction() {
+  try {
+    const allSubjects = await db.select().from(subjectsTable).orderBy(subjectsTable.name);
+    return { success: true, data: allSubjects };
+  } catch (error: any) {
+    console.error("Error fetching subjects:", error);
+    return { success: false, data: [] };
+  }
+}
+
+export async function createSubjectAction(name: string) {
+  try {
+    const [newSubject] = await db.insert(subjectsTable).values({ name }).returning();
+    return { success: true, data: newSubject };
+  } catch (error: any) {
+    console.error("Error creating subject:", error);
+    return { success: false, error: error.message };
+  }
+}
 
 export async function createStudentAction(data: any) {
   try {
@@ -43,11 +64,13 @@ export async function createStudentAction(data: any) {
     return { success: true };
   } catch (error: any) {
     console.error("Error creating student:", error);
+    if (error.code === '23505') {
+      return { success: false, error: "A student with this Roll Number already exists." };
+    }
     return { success: false, error: error.message };
   }
 }
 
-import { eq, desc } from "drizzle-orm";
 
 export async function getStudentsAction() {
   try {

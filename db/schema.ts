@@ -17,3 +17,8 @@ export const riskProfiles = pgTable('risk_profiles', {
   isAtRisk: boolean('is_at_risk').default(false),
   lastAnalyzedAt: timestamp('last_analyzed_at').defaultNow(),
 });
+
+export const subjects = pgTable('subjects', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull().unique(),
+});

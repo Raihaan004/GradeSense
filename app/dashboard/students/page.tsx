@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, X, ChevronRight, ChevronLeft, Check, Users, Search, Filter, AlertTriangle, FileText, Activity } from "lucide-react";
-import { createStudentAction, getStudentsAction, analyzeStudentAction } from "./actions";
+import { createStudentAction, getStudentsAction, analyzeStudentAction, getSubjectsAction, createSubjectAction } from "./actions";
 
 // Types
 type Subject = {
@@ -12,6 +12,7 @@ type Subject = {
   assignments: (number | "")[];
   cats: (number | "")[];
   cycleTests: (number | "")[];
+  labCycleTests: (number | "")[];
 };
 
 export default function StudentDirectory() {
@@ -58,7 +59,26 @@ export default function StudentDirectory() {
   const [basicInfo, setBasicInfo] = useState({ name: "", rollNo: "", department: "", section: "" });
   const [subjects, setSubjects] = useState<Subject[]>([]);
 
-  const availableSubjects = ["Mathematics", "Physics", "Chemistry", "Computer Science", "Electronics", "Mechanical Engineering"];
+  const [availableSubjects, setAvailableSubjects] = useState<{id: number, name: string}[]>([]);
+  const [newSubjectName, setNewSubjectName] = useState("");
+  const [isAddingSubject, setIsAddingSubject] = useState(false);
+
+  const fetchSubjects = async () => {
+    const res = await getSubjectsAction();
+    if (res.success && res.data.length > 0) {
+      setAvailableSubjects(res.data);
+    } else if (res.success && res.data.length === 0) {
+      // Seed default subjects if DB is empty
+      const defaults = ["Mathematics", "Physics", "Chemistry", "Computer Science"];
+      for (const d of defaults) await createSubjectAction(d);
+      const updated = await getSubjectsAction();
+      setAvailableSubjects(updated.data || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubjects();
+  }, []);
 
   const toggleSubject = (subjName: string) => {
     if (subjects.find(s => s.name === subjName)) {
@@ -69,13 +89,26 @@ export default function StudentDirectory() {
         name: subjName, 
         hasLab: false, 
         assignments: ["","","","",""], 
-        cats: ["","","","",""], 
-        cycleTests: ["","",""] 
+        cats: ["","",""], 
+        cycleTests: ["","",""],
+        labCycleTests: ["","",""]
       }]);
     }
   };
 
-  const handleNext = () => setStep(s => Math.min(5, s + 1));
+  const handleNext = () => {
+    if (step === 1) {
+      if (!basicInfo.name.trim() || !basicInfo.rollNo.trim() || !basicInfo.department || !basicInfo.section) {
+        alert("Please fill out all Basic Information fields before proceeding.");
+        return;
+      }
+    }
+    if (step === 2 && subjects.length === 0) {
+      alert("Please select at least one subject.");
+      return;
+    }
+    setStep(s => Math.min(6, s + 1));
+  };
   const handlePrev = () => setStep(s => Math.max(1, s - 1));
 
   const resetForm = () => {
@@ -170,7 +203,7 @@ export default function StudentDirectory() {
             
             {/* Modal Header */}
             <div className="flex justify-between items-center p-6 border-b border-slate-800">
-              <h2 className="text-xl font-bold text-white">Add New Student (Stage {step} of 5)</h2>
+              <h2 className="text-xl font-bold text-white">Add New Student (Stage {step} of 6)</h2>
               <button onClick={resetForm} className="text-slate-400 hover:text-white transition-colors">
                 <X className="w-6 h-6" />
               </button>
@@ -235,12 +268,41 @@ export default function StudentDirectory() {
               {/* Step 2: Subjects & Labs */}
               {step === 2 && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-white mb-4">Stage 2: Select Subjects & Labs</h3>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-white">Stage 2: Select Subjects & Labs</h3>
+                  </div>
+                  
+                  {/* Add New Subject */}
+                  <div className="flex gap-2 mb-4">
+                    <input 
+                      type="text" 
+                      placeholder="Enter new subject name..." 
+                      value={newSubjectName}
+                      onChange={e => setNewSubjectName(e.target.value)}
+                      className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-indigo-500 text-sm"
+                    />
+                    <button 
+                      onClick={async () => {
+                        if(!newSubjectName.trim()) return;
+                        setIsAddingSubject(true);
+                        await createSubjectAction(newSubjectName.trim());
+                        await fetchSubjects();
+                        setNewSubjectName("");
+                        setIsAddingSubject(false);
+                      }}
+                      disabled={isAddingSubject || !newSubjectName.trim()}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                    >
+                      {isAddingSubject ? "Adding..." : "Add Subject"}
+                    </button>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4">
-                    {availableSubjects.map(subj => {
+                    {availableSubjects.map(subjObj => {
+                      const subj = subjObj.name;
                       const isSelected = subjects.some(s => s.name === subj);
                       return (
-                        <div key={subj} className={`p-4 rounded-xl border ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : 'border-slate-700 bg-slate-800/50'} flex flex-col gap-3 transition-colors cursor-pointer`} onClick={() => toggleSubject(subj)}>
+                        <div key={subjObj.id} className={`p-4 rounded-xl border ${isSelected ? 'border-indigo-500 bg-indigo-500/10' : 'border-slate-700 bg-slate-800/50'} flex flex-col gap-3 transition-colors cursor-pointer`} onClick={() => toggleSubject(subj)}>
                            <div className="flex justify-between items-center">
                              <span className={`font-medium ${isSelected ? 'text-indigo-300' : 'text-slate-300'}`}>{subj}</span>
                              <div className={`w-5 h-5 rounded border ${isSelected ? 'bg-indigo-500 border-indigo-500 flex items-center justify-center' : 'border-slate-500'}`}>
@@ -311,7 +373,7 @@ export default function StudentDirectory() {
               {/* Step 4: CATs */}
               {step === 4 && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-white mb-4">Stage 4: CAT (Internal Exam) Marks (Out of 50)</h3>
+                  <h3 className="text-lg font-medium text-white mb-4">Stage 4: CAT (Internal Exam) Marks</h3>
                   {subjects.length === 0 ? (
                     <p className="text-slate-400">No subjects selected in Stage 2.</p>
                   ) : (
@@ -320,25 +382,28 @@ export default function StudentDirectory() {
                         <div key={subj.id} className="p-4 bg-slate-800/50 border border-slate-700 rounded-xl space-y-3">
                           <h4 className="font-medium text-indigo-300">{subj.name}</h4>
                           <div className="flex flex-wrap gap-4">
-                            {[0, 1, 2, 3, 4].map(idx => (
-                              <div key={idx}>
-                                <label className="text-xs text-slate-500 block mb-1">CAT {idx + 1}</label>
-                                <input 
-                                  type="number" 
-                                  max="50"
-                                  min="0"
-                                  placeholder="0-50"
-                                  value={subj.cats[idx]}
-                                  onChange={(e) => {
-                                    const val = e.target.value;
-                                    const newSubjs = [...subjects];
-                                    newSubjs[i].cats[idx] = val === "" ? "" : Number(val);
-                                    setSubjects(newSubjs);
-                                  }}
-                                  className="w-16 bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white focus:outline-none focus:border-indigo-500" 
-                                />
-                              </div>
-                            ))}
+                            {[0, 1, 2].map(idx => {
+                              const maxMarks = idx === 1 ? 25 : 50; // CAT 1,3 = 50, CAT 2 = 25
+                              return (
+                                <div key={idx}>
+                                  <label className="text-xs text-slate-500 block mb-1">CAT {idx + 1} ({maxMarks})</label>
+                                  <input 
+                                    type="number" 
+                                    max={maxMarks}
+                                    min="0"
+                                    placeholder={`0-${maxMarks}`}
+                                    value={subj.cats[idx]}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      const newSubjs = [...subjects];
+                                      newSubjs[i].cats[idx] = val === "" ? "" : Number(val);
+                                      setSubjects(newSubjs);
+                                    }}
+                                    className="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white focus:outline-none focus:border-indigo-500" 
+                                  />
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
@@ -386,6 +451,48 @@ export default function StudentDirectory() {
                 </div>
               )}
 
+              {/* Step 6: Lab Cycle Tests */}
+              {step === 6 && (
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium text-white mb-4">Stage 6: Lab Cycle Test Marks (Out of 100)</h3>
+                  {!subjects.some(s => s.hasLab) ? (
+                    <p className="text-slate-400">No subjects with lab component selected.</p>
+                  ) : (
+                    <div className="space-y-6">
+                      {subjects.filter(s => s.hasLab).map((subj) => {
+                        const i = subjects.findIndex(s => s.id === subj.id);
+                        return (
+                          <div key={subj.id} className="p-4 bg-slate-800/50 border border-slate-700 rounded-xl space-y-3">
+                            <h4 className="font-medium text-indigo-300">{subj.name} Lab</h4>
+                            <div className="flex flex-wrap gap-4">
+                              {[0, 1, 2].map(idx => (
+                                <div key={idx}>
+                                  <label className="text-xs text-slate-500 block mb-1">Lab CT {idx + 1}</label>
+                                  <input 
+                                    type="number" 
+                                    max="100"
+                                    min="0"
+                                    placeholder="0-100"
+                                    value={subj.labCycleTests[idx]}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      const newSubjs = [...subjects];
+                                      newSubjs[i].labCycleTests[idx] = val === "" ? "" : Number(val);
+                                      setSubjects(newSubjs);
+                                    }}
+                                    className="w-20 bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-center text-white focus:outline-none focus:border-indigo-500" 
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
             </div>
 
             {/* Modal Footer */}
@@ -398,7 +505,7 @@ export default function StudentDirectory() {
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
 
-              {step < 5 ? (
+              {step < 6 ? (
                 <button 
                   onClick={handleNext}
                   className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-all shadow-[0_0_10px_rgba(99,102,241,0.3)] flex items-center gap-2"

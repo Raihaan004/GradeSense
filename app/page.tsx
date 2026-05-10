@@ -1,5 +1,6 @@
 import { ArrowRight, BrainCircuit, LineChart, ShieldAlert, Users, Activity, Target } from "lucide-react";
 import Link from "next/link";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -11,9 +12,14 @@ export default function Home() {
           <span className="text-2xl font-bold text-white tracking-tight">GradeSense</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/dashboard" className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-medium px-5 py-2.5 transition-colors shadow-[0_0_15px_rgba(99,102,241,0.3)]">
-            Go to Dashboard
-          </Link>
+          <Show when="signed-out">
+            <SignInButton mode="modal"><button className="text-slate-300 hover:text-white font-medium transition-colors">Sign In</button></SignInButton>
+            <SignUpButton mode="modal"><button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-medium px-5 py-2.5 transition-colors shadow-[0_0_15px_rgba(99,102,241,0.3)]">Sign Up</button></SignUpButton>
+          </Show>
+          <Show when="signed-in">
+            <Link href="/dashboard" className="text-slate-300 hover:text-white font-medium transition-colors mr-4">Dashboard</Link>
+            <UserButton afterSignOutUrl="/" />
+          </Show>
         </div>
       </header>
 
