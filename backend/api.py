@@ -141,7 +141,7 @@ def analyze_student_deep(req: AnalyzeRequest):
     risk_prob = probabilities[1] * 100
     
     fig, ax = plt.subplots(figsize=(10, 5), facecolor='#0f172a')
-    ax.set_facecolor='#0f172a')
+    ax.set_facecolor('#0f172a')
     
     categories = ['Assignments', 'CATs', 'Cycle Tests', 'Lab Tests']
     
