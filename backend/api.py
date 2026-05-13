@@ -55,13 +55,13 @@ def generate_mock_data(num_students=1000):
 
 @app.on_event("startup")
 def startup_event():
-    print("🚀 Starting FastAPI Server...")
-    print("🧠 Training Random Forest Model...")
+    print("Starting FastAPI Server...")
+    print("Training Random Forest Model...")
     df = generate_mock_data(1000)
     X = df.drop('Risk', axis=1)
     y = df['Risk']
     model.fit(X, y)
-    print("✅ Model training complete and ready for predictions!")
+    print("Model training complete and ready for predictions!")
 
 class SubjectMarks(BaseModel):
     name: str
