@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 
 load_dotenv()
 
-app = FastAPI(title="GradeSense ML API")
+app = FastAPI(title="GradeSense ML API...")
 
 app.add_middleware(
     CORSMiddleware,
