@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { GraduationCap, ArrowRight, ShieldCheck, BarChart3, Users } from "lucide-react";
-import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignInButton, Show } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
           <span>GradeSense</span>
         </div>
         <div className="flex items-center gap-6">
-          <SignedOut>
+          <Show when="signed-out">
             <SignInButton mode="modal">
               <button className="text-gray-600 font-medium hover:text-blue-600 transition-colors">Sign In</button>
             </SignInButton>
@@ -22,15 +22,15 @@ export default function Home() {
             >
               Get Started
             </Link>
-          </SignedOut>
-          <SignedIn>
+          </Show>
+          <Show when="signed-in">
             <Link 
               href="/dashboard" 
               className="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
             >
               Go to Dashboard
             </Link>
-          </SignedIn>
+          </Show>
         </div>
       </nav>
 
